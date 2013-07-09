@@ -15,14 +15,15 @@
     	x:20,
     	y:100
     };
+    // StateManagerJS.clear();
     StateManagerJS.init();
-   // StateManagerJS.addListener("test",StateManagerJS.events.STATE_CHANGE,stateChange);
+   StateManagerJS.addListener("test",StateManagerJS.events.STATE_CHANGE,stateChange);
    StateManagerJS.setState("test",states);
     StateManagerJS.getState("test","visible");
   }
 	function stateChange(obj)
 	{
-		console.log(obj)
+		//console.log(obj)
 	}
 Main();
 }

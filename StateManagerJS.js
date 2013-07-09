@@ -3,17 +3,21 @@ var StateManagerJS = {
 		STATE_CHANGE : "STATE_CHANGE"
 	},
 	_states : {},
-	_callbacks : [],
+	_callbacks : {},
 	_const:
 	{
-		STATES:"states"
+		STATES:"states",
+		CALLBACKS:"callbacks"
 	},
 	init:function()
 	{
-		console.log(this.hasLocalStorage(),localStorage[this._const.STATES]);
-		if(this.hasLocalStorage() && localStorage[this._const.STATES])
+		
+		if(this.hasLocalStorage())
 		{
-			this._states = JSON.parse(localStorage[this._const.STATES]);
+			if(localStorage[this._const.STATES])this._states = JSON.parse(localStorage[this._const.STATES]);
+			// if(localStorage[this._const.CALLBACKS])this._callbacks = JSON.parse(localStorage[this._const.CALLBACKS]);
+			
+			
 		}
 	},
 	setState : function(id, obj) {
@@ -22,7 +26,7 @@ var StateManagerJS = {
 		for (var name in obj) {
 			this._states[id][name] = obj[name];
 		}
-		console.log("setState",this._states);
+		
 		this.updateLocalStorage();
 		
 		this.executeCallbacks(id, this.events.STATE_CHANGE);
@@ -30,7 +34,11 @@ var StateManagerJS = {
 	updateLocalStorage:function()
 	{
 		if(this.hasLocalStorage())
+		{
+			
 		localStorage.setItem(this._const.STATES, JSON.stringify(this._states));
+		// localStorage.setItem(this._const.CALLBACKS, JSON.stringify(this._callbacks));	
+		}
 	},
 	getState : function(id, name) {
 		if (!this._states[id] || this._states[id][name] == undefined)
@@ -39,11 +47,12 @@ var StateManagerJS = {
 	},
 	addListener : function(id, eventName, callback) {
 		if (!this._callbacks[id])
-			this._callbacks[id] = [];
+			this._callbacks[id] = {};
 		if (!this._callbacks[id][eventName])
 			this._callbacks[id][eventName] = [];
 		this._callbacks[id][eventName].push(callback);
-
+		
+		this.updateLocalStorage();
 	},
 	executeCallbacks : function(id, eventName) {
 		if (!this._callbacks[id] || !this._callbacks[id][eventName])
@@ -52,6 +61,11 @@ var StateManagerJS = {
 			this._callbacks[id][eventName][a](this._states[id]);
 		}
 
+	},
+	clear:function()
+	{
+		if(this.hasLocalStorage())
+		localStorage.clear();
 	},
 	hasLocalStorage : function() {
 		return (window['localStorage'] !== null);
